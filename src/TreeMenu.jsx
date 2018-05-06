@@ -107,11 +107,11 @@ export default class TreeMenu extends Component {
         nodeProps.label = nodeProps.label || i
 
         if (dataForNode.children) {
-          children = dataToNodes(dataForNode.children, ancestor.concat(thisComponent.getNodeId(treeMenuProps, nodeProps, i)))
+          children = dataToNodes(dataForNode.children, ancestor.concat(TreeNodeMixin.getNodeId(treeMenuProps, nodeProps, i)))
         }
 
         return TreeNodeFactory(
-          Object.assign(nodeProps, thisComponent.getTreeNodeProps(treeMenuProps, nodeProps, ancestor, isRootNode, i)),
+          Object.assign(nodeProps, TreeNodeMixin.getTreeNodeProps(treeMenuProps, nodeProps, ancestor, isRootNode, i)),
           children
         )
       })
