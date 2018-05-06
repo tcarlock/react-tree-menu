@@ -1,6 +1,7 @@
-var React = require('react'),
-  TreeNodeMixin = require('./TreeNodeMixin'),
-  noop = require('lodash/utility/noop');
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
+import TreeNodeMixin from './TreeNodeMixin'
+import noop from 'lodash/utility/noop'
 
 /**
  * Individual nodes in tree hierarchy, nested under a single <TreeMenu/> node
@@ -8,86 +9,258 @@ var React = require('react'),
  *
  * @type {TreeNode}
  */
-var TreeNode = React.createClass({
+export default class TreeNode extends Component {
+  static propTypes = {
+    stateful: PropTypes.bool,
+    checkbox: PropTypes.bool,
+    collapsible : PropTypes.bool,
+    collapsed : PropTypes.bool,
+    expandIconClass: PropTypes.string,
+    collapseIconClass: PropTypes.string,
+    checked: PropTypes.bool,
+    label: PropTypes.string.isRequired,
+    classNamePrefix: PropTypes.string,
+    onClick: PropTypes.func,
+    onCheckChange: PropTypes.func,
+    onSelectChange: PropTypes.func,
+    onCollapseChange: PropTypes.func,
+    labelFilter: PropTypes.func,
+    labelFactory: PropTypes.func,
+    checkboxFactory: PropTypes.func
+  };
 
-  mixins : [TreeNodeMixin],
-
-  propTypes : {
-
-    stateful: React.PropTypes.bool,
-    checkbox: React.PropTypes.bool,
-    collapsible : React.PropTypes.bool,
-    collapsed : React.PropTypes.bool,
-    expandIconClass: React.PropTypes.string,
-    collapseIconClass: React.PropTypes.string,
-    checked: React.PropTypes.bool,
-    label: React.PropTypes.string.isRequired,
-    classNamePrefix: React.PropTypes.string,
-    onClick: React.PropTypes.func,
-    onCheckChange: React.PropTypes.func,
-    onSelectChange: React.PropTypes.func,
-    onCollapseChange: React.PropTypes.func,
-    labelFilter: React.PropTypes.func,
-    labelFactory: React.PropTypes.func,
-    checkboxFactory: React.PropTypes.func
-
-  },
-
-  getInitialState: function () {
-    return {};
-  },
-
-  getDefaultProps: function () {
-    return {
-      stateful: false,
-      collapsible: true,
-      collapsed: false,
-      checkbox : false,
-      onClick: function(lineage) {
-        console.log("Tree Node clicked: " + lineage.join(" > "));
-      },
-      onCheckChange: function (lineage) {
-        console.log("Tree Node indicating a checkbox check state should change: " + lineage.join(" > "));
-      },
-      onCollapseChange: function (lineage) {
-        console.log("Tree Node indicating collapse state should change: " + lineage.join(" > "));
-      },
-      checked : false,
-      expandIconClass: "",
-      collapseIconClass: "",
-      labelFactory: function (labelClassName, displayLabel) {
-        return <label className={labelClassName}>{displayLabel}</label>;
-      },
-      checkboxFactory: function (className, isChecked) {
-        return (
-          <input
+  static defautProps = {
+    stateful: false,
+    collapsible: true,
+    collapsed: false,
+    checkbox : false,
+    onClick: (lineage) => {
+      console.log('Tree Node clicked: ' + lineage.join(' > '))
+    },
+    onCheckChange: (lineage) => {
+      console.log('Tree Node indicating a checkbox check state should change: ' + lineage.join(' > '))
+    },
+    onCollapseChange: (lineage) => {
+      console.log('Tree Node indicating collapse state should change: ' + lineage.join(' > '))
+    },
+    checked : false,
+    expandIconClass: '',
+    collapseIconClass: '',
+    labelFactory: (labelClassName, displayLabel) => {
+      return <label className={labelClassName}>{displayLabel}</label>
+    },
+    checkboxFactory: (className, isChecked) => {
+      return (
+        <input
           className={className}
-          type="checkbox"
+          type='checkbox'
           checked={isChecked}
-          onChange={noop}/>);
-      }
+          onChange={noop}
+        />
+      )
     }
-  },
-  
-  _getCollapseNode: function() {
-    var props = this.props,
-      collapseNode = null;
+  };
 
-    if (props.collapsible) {
-      var collapseClassName = this._getRootCssClass() + "-collapse-toggle ";
-      var collapseToggleHandler = this._handleCollapseChange;
-      if (!props.children || props.children.length === 0) {
-        collapseToggleHandler = noop;
-        collapseClassName += "collapse-spacer";
+  state = {}
+
+  componentWillReceiveProps (nextProps) {
+    const mutations = {}
+
+    if (!this._isStateful()) return
+
+    if (this.props.checked !== nextProps.checked) {
+      mutations.checked = nextProps.checked
+    }
+
+    this.setState(mutations)
+  }
+  
+  _getCollapseNode = () => {
+    const {
+      collapsible,
+      children,
+      expandIconClass,
+      collapseIconClass
+    } = this.props
+    
+    let collapseNode = null
+
+    if (collapsible) {
+      let collapseClassName = this._getRootCssClass() + '-collapse-toggle '
+      let collapseToggleHandler = this._handleCollapseChange
+
+      if (!children || children.length === 0) {
+        collapseToggleHandler = noop
+        collapseClassName += 'collapse-spacer'
       } else {
-        collapseClassName += (this._isCollapsed() ? props.expandIconClass : props.collapseIconClass);
+        collapseClassName += (this._isCollapsed() ? expandIconClass : collapseIconClass)
       }
       collapseNode = <span onClick={collapseToggleHandler} className={collapseClassName}></span>
     }
-    return collapseNode;
-  },
 
-  render : function () {
+    return collapseNode
+  }
+
+  _getRootCssClass = () => {
+    return this.props.classNamePrefix + '-node'
+  }
+
+  _getChildrenNode = () => {
+    const {
+      children
+    } = this.props
+
+    if (this._isCollapsed()) return null
+
+    if (this._isStateful()) {
+      return (
+        <div className={this._getRootCssClass() + '-children'}>
+          {
+            React.Children.map(props.children, (child) => {
+              return React.cloneElement(child, {
+                key: child.key,
+                ref: child.ref,
+                checked : this.state.checked
+              })
+            })
+          }
+        </div>
+      )
+    } 
+
+    return (
+      <div className={this._getRootCssClass() + '-children'}>
+        {children}
+      </div>
+    )
+  }
+
+  _getLabelNode = () => {
+    const {
+      classNamePrefix,
+      label,
+      labelFilter,
+      labelFactory
+    } = this.props
+
+    let labelClassName = classNamePrefix + '-node-label'
+
+    if (this._isSelected()) {
+      labelClassName += ' selected'
+    }
+
+    let displayLabel = labelFilter ? labelFilter(displayLabel) : label
+
+    return labelFactory(labelClassName, displayLabel, this._getLineage())
+  }
+
+  _getCheckboxNode = () => {
+    const {
+      checkbox,
+      checkboxFactory,
+      classNamePrefix
+    } = this.props
+
+    if (!checkbox) {
+      return null
+    }
+
+    return this.checkboxFactory(classNamePrefix + '-node-checkbox', this._isChecked(), this._getLineage())
+  }
+
+  _isStateful = () => {
+    return this.props.stateful
+  }
+
+  _isChecked = () => {
+    if (this._isStateful() && typeof this.state.checked !== 'undefined') {
+      return this.state.checked
+    }
+
+    return this.props.checked
+  }
+
+  _isSelected = () => {
+    if (this._isStateful() && typeof this.state.selected !== 'undefined') {
+      return this.state.selected
+    }
+
+    return this.props.selected
+  }
+
+  _isCollapsed = () => {
+    const {
+      collapsible,
+      collapsed
+    } = this.props
+
+    const {
+      collapsed: isCollapsed
+    } = this.state
+
+    if (this._isStateful() && typeof isCollapsed !== 'undefined') {
+      return isCollapsed
+    }
+
+    if (!collapsible) {
+      return false
+    }
+
+    return collapsed
+  }
+
+  _handleClick = () => {
+    const {
+      checkbox,
+      onSelectChange,
+      onClick
+    } = this.props
+
+    if (checkbox) {
+      return this._handleCheckChange()
+    } else if (onSelectChange) {
+      return this._handleSelectChange()
+    }
+
+    onClick(this._getLineage())
+  }
+
+  _toggleNodeStateIfStateful = (field) => {
+    if (this._isStateful()) {
+      var newValue = !this.props[field]
+      if (typeof this.state[field] !== 'undefined') {
+        {
+        }
+
+        newValue = !this.state[field]
+      }
+      var mutation = {}
+      mutation[field] = newValue
+      console.log(mutation)
+      this.setState(mutation)
+    }
+  }
+
+  _handleCheckChange = () => {
+    this._toggleNodeStateIfStateful('checked')
+    this.props.onCheckChange(this._getLineage())
+  }
+
+  _handleSelectChange = () => {
+    this._toggleNodeStateIfStateful('selected')
+    this.props.onSelectChange(this._getLineage())
+  }
+
+  _handleCollapseChange = () => {
+    this._toggleNodeStateIfStateful('collapsed')
+    this.props.onCollapseChange(this._getLineage())
+  }
+
+  _getLineage = () => {
+    return this.props.ancestor.concat(this.props.id)
+  }
+
+  render () {
     return (
       <div className={this._getRootCssClass()}>
         {this._getCollapseNode()}
@@ -97,163 +270,6 @@ var TreeNode = React.createClass({
         </span>
         {this._getChildrenNode()}
       </div>
-    );
-  },
-
-  componentWillReceiveProps: function (nextProps) {
-
-    if (!this._isStateful()) return;
-
-    var mutations = {};
-
-    if (this.props.checked !== nextProps.checked) {
-      mutations.checked = nextProps.checked;
-    }
-
-    this.setState(mutations);
-
-  },
-
-  _getRootCssClass: function () {
-    return this.props.classNamePrefix + "-node";
-  },
-
-  _getChildrenNode: function () {
-
-    var props = this.props;
-
-    if (this._isCollapsed()) return null;
-
-    var children = props.children;
-
-    if (this._isStateful()) {
-      var state = this.state;
-      children = React.Children.map(props.children, function (child) {
-        return React.cloneElement(child, {
-          key: child.key,
-          ref: child.ref,
-          checked : state.checked
-        })
-      });
-    } 
-
-    return (
-      <div className={this._getRootCssClass() + "-children"}>
-          {children}
-      </div>
-    );
-
-  },
-
-  _getLabelNode: function () {
-
-    var props = this.props,
-      labelClassName = props.classNamePrefix + "-node-label";
-
-    if (this._isSelected()) {
-      labelClassName += " selected";
-    }
-
-    var displayLabel = props.label;
-
-    if (props.labelFilter) displayLabel = props.labelFilter(displayLabel);
-
-    return this.props.labelFactory(labelClassName, displayLabel, this._getLineage());
-  },
-
-  _getCheckboxNode: function () {
-    var props = this.props;
-    if (!props.checkbox) return null;
-
-    return this.props.checkboxFactory(props.classNamePrefix + "-node-checkbox", this._isChecked(), this._getLineage());
-  },
-
-  _isStateful: function () {
-
-    return this.props.stateful ? true : false;
-
-  },
-
-  _isChecked: function () {
-
-    if (this._isStateful() && typeof this.state.checked !== "undefined") return this.state.checked;
-    return this.props.checked;
-
-  },
-
-  _isSelected: function () {
-
-    if (this._isStateful() && typeof this.state.selected !== "undefined") return this.state.selected;
-    return this.props.selected;
-
-  },
-
-  _isCollapsed: function () {
-
-    if (this._isStateful() && typeof this.state.collapsed !== "undefined") return this.state.collapsed;
-
-    if (!this.props.collapsible) return false;
-
-    return this.props.collapsed;
-
-  },
-
-  _handleClick: function () {
-    if (this.props.checkbox) {
-      return this._handleCheckChange();
-    } else if (this.props.onSelectChange) {
-      return this._handleSelectChange();
-    }
-
-    this.props.onClick(this._getLineage());
-
-  },
-
-  _toggleNodeStateIfStateful: function (field) {
-    if (this._isStateful()) {
-      var newValue = !this.props[field];
-      if (typeof this.state[field] !== "undefined") {
-        newValue = !this.state[field];
-      }
-      var mutation = {};
-      mutation[field] = newValue;
-      console.log(mutation);
-      this.setState(mutation);
-    }
-
-  },
-
-  _handleCheckChange: function () {
-
-    this._toggleNodeStateIfStateful("checked");
-
-    this.props.onCheckChange(this._getLineage());
-
-  },
-
-  _handleSelectChange: function () {
-
-    this._toggleNodeStateIfStateful("selected");
-
-    this.props.onSelectChange(this._getLineage());
-
-  },
-
-  _handleCollapseChange: function () {
-
-    this._toggleNodeStateIfStateful("collapsed");
-
-    this.props.onCollapseChange(this._getLineage());
-
-  },
-
-  _getLineage: function () {
-
-    return this.props.ancestor.concat(this.props.id);
-
+    )
   }
-
-});
-
-
-module.exports = TreeNode;
+}
