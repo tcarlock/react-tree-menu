@@ -5,6 +5,7 @@ export default {
   collapsible: true,
   collapsed: false,
   checkbox : false,
+  classNamePrefix: 'tree-view',
   onClick: (lineage) => {
     console.log('Tree Node clicked: ' + lineage.join(' > '))
   },
