@@ -108,11 +108,13 @@ export default class TreeMenu extends Component {
           children = dataToNodes(dataForNode.children, ancestor.concat(TreeNodeMixin.getNodeId(treeMenuProps, nodeProps, i)))
         }
 
-        return React.createElement(
+        const newElement = React.createElement(
           TreeNode,
           Object.assign(nodeProps, TreeNodeMixin.getTreeNodeProps(treeMenuProps, nodeProps, ancestor, isRootNode, i)),
           children
         )
+
+        return newElement
       })
 
       const { sort } = thisComponent.props
