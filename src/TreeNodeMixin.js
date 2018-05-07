@@ -24,7 +24,7 @@ export default {
         onCheckChange: rootProps.onTreeNodeCheckChange,
         onSelectChange: rootProps.onTreeNodeSelectChange,
         onCollapseChange: rootProps.onTreeNodeCollapseChange,
-        id: this.getNodeId(rootProps, props, childIndex),
+        id: getNodeId(rootProps, props, childIndex),
         key: `tree-node-${ancestor.join('.')}childIndex`
       },
       _pick(rootProps,
