@@ -165,7 +165,7 @@ export default class TreeNode extends Component {
       return null
     }
 
-    return this.checkboxFactory(classNamePrefix + '-node-checkbox', this._isChecked(), this._getLineage())
+    return checkboxFactory(classNamePrefix + '-node-checkbox', this._isChecked(), this._getLineage())
   }
 
   _isStateful = () => {
