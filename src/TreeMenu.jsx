@@ -113,7 +113,7 @@ export default class TreeMenu extends Component {
           TreeNode,
           Object.assign(
             nodeProps,
-            TreeNodeMixin.getTreeNodeProps(treeMenuProps, nodeProps, ancestor, isRootNode, i)
+            TreeNodeMixin.getTreeNodeProps(treeMenuProps, nodeProps, ancestor, isRootNode, i),
             nodeDefaultProps
           ),
           children
