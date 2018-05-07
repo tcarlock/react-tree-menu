@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
+import nodeDefaultProps from './nodeDefaultProps'
 import noop from 'lodash/utility/noop'
 
 /**
@@ -28,37 +29,7 @@ export default class TreeNode extends Component {
     checkboxFactory: PropTypes.func
   };
 
-  static defautProps = {
-    stateful: false,
-    collapsible: true,
-    collapsed: false,
-    checkbox : false,
-    onClick: (lineage) => {
-      console.log('Tree Node clicked: ' + lineage.join(' > '))
-    },
-    onCheckChange: (lineage) => {
-      console.log('Tree Node indicating a checkbox check state should change: ' + lineage.join(' > '))
-    },
-    onCollapseChange: (lineage) => {
-      console.log('Tree Node indicating collapse state should change: ' + lineage.join(' > '))
-    },
-    checked : false,
-    expandIconClass: '',
-    collapseIconClass: '',
-    labelFactory: (labelClassName, displayLabel) => {
-      return <label className={labelClassName}>{displayLabel}</label>
-    },
-    checkboxFactory: (className, isChecked) => {
-      return (
-        <input
-          className={className}
-          type='checkbox'
-          checked={isChecked}
-          onChange={noop}
-        />
-      )
-    }
-  };
+  static defautProps = nodeDefaultProps;
 
   state = {}
 
