@@ -1,7 +1,3 @@
-import api from './src/TreeMenu.jsx'
-
-api.TreeMenu = require('./src/TreeMenu.jsx');
-api.TreeNode = require('./src/TreeNode.jsx');
-api.Utils = require('./src/TreeMenuUtils');
-
-export default api
+export TreeMenu = require('./src/TreeMenu.jsx');
+export TreeNode = require('./src/TreeNode.jsx');
+export Utils = require('./src/TreeMenuUtils');
