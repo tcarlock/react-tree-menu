@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import TreeNode from './TreeNode.jsx'
+import TreeNodeMixin from './TreeNodeMixin'
 import _clone from 'lodash/lang/clone'
 import _omit from 'lodash/object/omit'
 import _sortBy from 'lodash/collection/sortBy'
