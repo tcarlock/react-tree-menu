@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import TreeNodeMixin from './TreeNodeMixin'
 import noop from 'lodash/utility/noop'
 
 /**

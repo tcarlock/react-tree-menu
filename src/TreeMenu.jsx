@@ -1,14 +1,11 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import TreeNode from './TreeNode.jsx'
-import TreeNodeMixin from './TreeNodeMixin'
 import _clone from 'lodash/lang/clone'
 import _omit from 'lodash/object/omit'
 import _sortBy from 'lodash/collection/sortBy'
 import invariant from 'invariant'
 import _map from 'lodash/collection/map'
-
-const TreeNodeFactory = React.createFactory(TreeNode)
 
 /**
  * The root component for a tree view. Can have one or many <TreeNode/> children
@@ -110,7 +107,8 @@ export default class TreeMenu extends Component {
           children = dataToNodes(dataForNode.children, ancestor.concat(TreeNodeMixin.getNodeId(treeMenuProps, nodeProps, i)))
         }
 
-        return TreeNodeFactory(
+        return React.createElement(
+          TreeNode,
           Object.assign(nodeProps, TreeNodeMixin.getTreeNodeProps(treeMenuProps, nodeProps, ancestor, isRootNode, i)),
           children
         )
