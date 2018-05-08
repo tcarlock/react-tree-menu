@@ -20,7 +20,7 @@ export default {
     return Object.assign(
       {
         ancestor: ancestor,
-        checkbox: props.checkbox && props.children,
+        checkbox: props.checkbox,
         onClick: rootProps.onTreeNodeClick,
         onCheckChange: rootProps.onTreeNodeCheckChange,
         onSelectChange: rootProps.onTreeNodeSelectChange,
