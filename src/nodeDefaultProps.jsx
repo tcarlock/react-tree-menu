@@ -1,4 +1,5 @@
 import React from 'react'
+import _noop from 'lodash/utility/noop'
 
 export default {
   stateful: false,

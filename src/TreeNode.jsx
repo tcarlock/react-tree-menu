@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import nodeDefaultProps from './nodeDefaultProps'
-import noop from 'lodash/utility/noop'
+import _noop from 'lodash/utility/noop'
 
 /**
  * Individual nodes in tree hierarchy, nested under a single <TreeMenu/> node
@@ -60,7 +60,7 @@ export default class TreeNode extends Component {
       let collapseToggleHandler = this._handleCollapseChange
 
       if (!children || children.length === 0) {
-        collapseToggleHandler = noop
+        collapseToggleHandler = _noop
         collapseClassName += 'collapse-spacer'
       } else {
         collapseClassName += (this._isCollapsed() ? expandIconClass : collapseIconClass)
