@@ -28,7 +28,7 @@ export default {
         className={className}
         type='checkbox'
         checked={isChecked}
-        onChange={noop}
+        onChange={_noop}
       />
     )
   }
